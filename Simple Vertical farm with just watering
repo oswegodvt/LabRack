@@ -1,0 +1,112 @@
+
+//Declare var names for the pins/outlets
+#define outlet1 53
+#define outlet2 51
+#define outlet3 49
+#define outlet4 47
+
+// outlet3 will be drive motor
+// outlet4 will be water pump
+
+//Input buttons
+#define forwardBtn 43
+#define backwardBtn 45
+#define toggleSwitch 41
+#define rightLimitSwitch 39
+
+//Booleans for outlet on and off states
+bool on = LOW;
+bool off = HIGH;
+
+void setup(){
+  Serial.begin(9600);      // open the serial port at 9600 bps:
+  
+  //Define outlet pins as outputs
+  pinMode(outlet1,OUTPUT);
+  pinMode(outlet2,OUTPUT);
+  pinMode(outlet3,OUTPUT);
+  pinMode(outlet4,OUTPUT);
+
+  //Set all outlets to off
+  digitalWrite(outlet1,off);
+  digitalWrite(outlet2,off);
+  digitalWrite(outlet3,off);
+  digitalWrite(outlet4,off);
+
+  //Input buttons
+  pinMode(forwardBtn,INPUT);
+  pinMode(backwardBtn,INPUT);
+  pinMode(toggleSwitch,INPUT);
+
+  //Limit switches
+  pinMode(rightLimitSwitch,INPUT);
+  pinMode(13,OUTPUT);
+}
+
+
+
+
+
+
+
+
+void loop()
+{
+  digitalWrite(13,digitalRead(rightLimitSwitch)||digitalRead(toggleSwitch));
+
+if (digitalRead(toggleSwitch) == HIGH){
+    //Forward till micoSwitch pressed
+  while(digitalRead(rightLimitSwitch) == LOW){
+    digitalWrite(outlet3,on);
+  }
+  
+  //Stop
+  delay(100);
+  digitalWrite(outlet3,off);
+  
+
+  
+  //Wait for swing to stop
+  delay(300);
+  
+  //Turn on pump till full (time)
+  digitalWrite(outlet4,on);
+  delay(14000);
+  
+  //Turn pump off
+  digitalWrite(outlet4,off);
+  
+  //Wait for dripping to stop (time)
+  delay(3000);
+  
+  //Drive forward until microSwitch is no longer pressed
+  while(digitalRead(rightLimitSwitch) == HIGH){
+    digitalWrite(outlet3,on);
+  }
+
+  //delay to move away from the switch
+    delay(800);
+
+ //PRINT TO SERIAL MONITOR THIS ONE ADDED BY D TRYON
+      Serial.print("rightlimitswitch ");
+      Serial.print(rightLimitSwitch);
+      Serial.println();
+    
+  //Turn off drive motor
+  digitalWrite(outlet3,off);
+  }
+  else {
+    digitalWrite(outlet3,off);
+    digitalWrite(outlet4,off);
+  }
+             
+}
+
+
+
+
+
+
+
+
+
